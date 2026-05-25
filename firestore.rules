@@ -1,0 +1,35 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // MindKit cartes mentales
+    match /mindmaps/{mapId} {
+
+      // Lecture autorisée :
+      //  - au propriétaire de la carte (édition)
+      //  - à n'importe quel visiteur si la carte est publique (lien partagé)
+      allow read: if
+        (request.auth != null && request.auth.uid == resource.data.ownerId)
+        || resource.data.isPublic == true;
+
+      // Création réservée à un utilisateur authentifié, qui devient propriétaire.
+      allow create: if
+        request.auth != null
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.nodes is list
+        && request.resource.data.title is string;
+
+      // Mise à jour & suppression uniquement par le propriétaire.
+      // Le propriétaire ne peut pas être modifié.
+      allow update: if
+        request.auth != null
+        && resource.data.ownerId == request.auth.uid
+        && request.resource.data.ownerId == resource.data.ownerId;
+
+      allow delete: if
+        request.auth != null
+        && resource.data.ownerId == request.auth.uid;
+    }
+  }
+}

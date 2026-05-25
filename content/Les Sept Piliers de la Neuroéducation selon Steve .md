@@ -1,0 +1,57 @@
+# Les Sept Piliers de la Neuroéducation selon Steve Masson
+
+## 7 principes neuroéducatifs (Steve Masson), 7 enfants
+  - 1. Activer les neurones, 2 enfants
+    - Pourquoi, 3 enfants
+      - Changer connexions (Hebb)
+      - Apprendre efficacement
+      - Créer liens pertinents
+    - Comment, 3 enfants
+      - Approches actives
+      - Éviter passivité
+      - Éviter distractions
+  - 2. À plusieurs reprises, 2 enfants
+    - Pourquoi, 3 enfants
+      - Renforcer connexions
+      - Diminuer charge préfrontale
+      - Réduire l'oubli
+    - Comment, 3 enfants
+      - Planifier moments d'activation
+      - Surapprentissage
+      - Éviter répétition d'erreurs
+  - 3. Récupération en mémoire, 2 enfants
+    - Pourquoi, 2 enfants
+      - Activation répétée
+      - Régions cérébrales clés
+    - Comment, 3 enfants
+      - Tests fréquents
+      - Flashcards
+      - Laisser du temps
+  - 4. Élaborer des explications, 2 enfants
+    - Pourquoi, 2 enfants
+      - Lier connaissances
+      - Réseaux existants
+    - Comment, 2 enfants
+      - S'auto-expliquer
+      - Connaissances antérieures
+  - 5. De façon espacée, 2 enfants
+    - Pourquoi, 2 enfants
+      - Sommeil et consolidation
+      - Maintien activité
+    - Comment, 2 enfants
+      - Distribuer périodes
+      - Entrelacer apprentissages
+  - 6. Maximiser la rétroaction, 2 enfants
+    - Pourquoi, 2 enfants
+      - Correction d'erreur
+      - Dopamine
+    - Comment, 2 enfants
+      - Rétroaction immédiate
+      - Équilibre positif/négatif
+  - 7. État d'esprit dynamique, 2 enfants
+    - Pourquoi, 2 enfants
+      - Croit en la plasticité
+      - Persévérance
+    - Comment, 2 enfants
+      - Enseigner la neuroplasticité
+      - Effort vs Talent
