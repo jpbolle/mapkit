@@ -54,6 +54,10 @@ export default function MapEditorPage({
     if (!pendingPatch.current) return;
     const patch = pendingPatch.current;
     pendingPatch.current = null;
+    if (saveTimer.current) {
+      clearTimeout(saveTimer.current);
+      saveTimer.current = null;
+    }
     setSaveState("saving");
     try {
       await saveMap(id, patch);
@@ -64,18 +68,41 @@ export default function MapEditorPage({
     }
   }, [id]);
 
+  // Keep the latest flushSave reachable from cleanup hooks without retriggering them.
+  const flushSaveRef = useRef(flushSave);
+  useEffect(() => {
+    flushSaveRef.current = flushSave;
+  }, [flushSave]);
+
   const queueSave = useCallback(
     (patch: { title?: string; nodes?: MindNode[] }) => {
       pendingPatch.current = { ...(pendingPatch.current ?? {}), ...patch };
       if (saveTimer.current) clearTimeout(saveTimer.current);
-      saveTimer.current = setTimeout(flushSave, 700);
+      saveTimer.current = setTimeout(flushSave, 400);
     },
     [flushSave],
   );
 
+  // Flush any pending change when leaving the editor (back to atelier, navigate
+  // away, refresh, close tab) so manual positions, edits, etc. are not lost.
   useEffect(() => {
+    const onBeforeUnload = () => {
+      if (pendingPatch.current) {
+        // Best-effort: fire the save and let the browser try to deliver it.
+        // Firestore SDK cannot use sendBeacon, but in practice this works
+        // for SPA navigations and most tab-close scenarios.
+        flushSaveRef.current();
+      }
+    };
+    window.addEventListener("beforeunload", onBeforeUnload);
     return () => {
-      if (saveTimer.current) clearTimeout(saveTimer.current);
+      window.removeEventListener("beforeunload", onBeforeUnload);
+      // On unmount (e.g. router navigation), flush instead of dropping the timer.
+      if (pendingPatch.current) {
+        flushSaveRef.current();
+      } else if (saveTimer.current) {
+        clearTimeout(saveTimer.current);
+      }
     };
   }, []);
 
