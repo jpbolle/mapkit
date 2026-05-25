@@ -252,6 +252,14 @@ export default function MindMap({ nodes, onChange, readOnly = false }: Props) {
   const [reparentTargetId, setReparentTargetId] = useState<string | null>(null);
   const reparentTargetRef = useRef<string | null>(null);
 
+  // Ids of the nodes currently being dragged (the dragged node + its descendants).
+  // While the drag is active and has actually moved, those nodes get
+  // `pointer-events: none` so `document.elementFromPoint(...)` can pierce
+  // through them and find a valid reparent target underneath.
+  const [draggingAffectedIds, setDraggingAffectedIds] = useState<Set<string>>(
+    () => new Set(),
+  );
+
   // Defensive: deduplicate by node id in case the source data ever ends up with
   // duplicates (e.g. from a malformed save). The first occurrence wins.
   const safeNodes = useMemo(() => {
@@ -551,6 +559,9 @@ export default function MindMap({ nodes, onChange, readOnly = false }: Props) {
         const dy = (e.clientY - dragState.current.startClientY) / scale;
         if (!dragState.current.moved && Math.hypot(dx * scale, dy * scale) > 4) {
           dragState.current.moved = true;
+          // Once the drag is real, pierce the dragged subtree so the
+          // reparent target detector can find labels underneath.
+          setDraggingAffectedIds(new Set(dragState.current.affectedIds));
         }
         if (dragState.current.moved && onChange) {
           // Only update the dragged node's manual offset; descendants follow
@@ -607,6 +618,7 @@ export default function MindMap({ nodes, onChange, readOnly = false }: Props) {
       dragState.current.active = false;
       reparentTargetRef.current = null;
       setReparentTargetId(null);
+      setDraggingAffectedIds(new Set());
     };
     window.addEventListener("mousemove", move);
     window.addEventListener("mouseup", up);
@@ -767,6 +779,7 @@ export default function MindMap({ nodes, onChange, readOnly = false }: Props) {
           const isEditing = editingId === l.node.id;
 
           const isReparentTarget = reparentTargetId === l.node.id;
+          const isBeingDragged = draggingAffectedIds.has(l.node.id);
           return (
             <div
               key={l.node.id}
@@ -778,6 +791,7 @@ export default function MindMap({ nodes, onChange, readOnly = false }: Props) {
                 top: l.y - l.height / 2,
                 width: l.width,
                 height: l.height,
+                pointerEvents: isBeingDragged ? "none" : undefined,
               }}
             >
               <button
